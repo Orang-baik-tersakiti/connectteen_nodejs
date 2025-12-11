@@ -37,4 +37,5 @@ app.use(express.json());
 app.use("/api", musicRouter);
 app.use("/api/auth", authRouter);
 
-app.listen(PORT, () => console.log(`Server is running at port ${PORT}`));
+// app.listen(PORT, () => console.log(`Server is running at port ${PORT}`));
+module.exports = app
