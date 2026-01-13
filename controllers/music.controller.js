@@ -30,6 +30,11 @@ const searchMusic = async (req, res) => {
       return res.status(400).json({ error: "Query tidak boleh kosong" });
     }
 
+     // 🔑 Pastikan token ada
+    if (!accessToken) {
+      await getAccessToken();
+    }
+
     const response = await axios.get("https://api.spotify.com/v1/search", {
       headers: {
         Authorization: `Bearer ${accessToken}`,
