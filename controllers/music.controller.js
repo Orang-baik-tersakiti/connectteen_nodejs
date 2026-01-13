@@ -1,48 +1,63 @@
-require("dotenv").config();
-const SpotifyWebApi = require("spotify-web-api-node");
+const axios = require("axios");
 
-// init client
-const spotifyApi = new SpotifyWebApi({
-  clientId: process.env.SPOTIFY_CLIENT_ID,
-  clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-});
+let accessToken = "";
 
-async function search(query) {
+// 🔑 Ambil Access Token Spotify
+const getAccessToken = async () => {
+  const auth = Buffer.from(
+    process.env.SPOTIFY_CLIENT_ID + ":" + process.env.SPOTIFY_CLIENT_SECRET
+  ).toString("base64");
+
+  const response = await axios.post(
+    "https://accounts.spotify.com/api/token",
+    "grant_type=client_credentials",
+    {
+      headers: {
+        Authorization: `Basic ${auth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
+
+  accessToken = response.data.access_token;
+};
+
+// 🔍 Search Lagu
+const searchMusic = async (req, res) => {
   try {
-    // ambil access token (client credentials)
-    const tokenData = await spotifyApi.clientCredentialsGrant();
-    spotifyApi.setAccessToken(tokenData.body.access_token);
+    const query = req.query.search;
+    if (!query) {
+      return res.status(400).json({ error: "Query tidak boleh kosong" });
+    }
 
-    // search track
-    const result = await spotifyApi.searchTracks(query);
+    const response = await axios.get("https://api.spotify.com/v1/search", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      params: {
+        q: query,
+        type: "track",
+        limit: 5,
+      },
+    });
 
-    // tampilkan judul & artist
-    // result.body.tracks.items.slice(0, 5).forEach((track, i) => {
-    //   console.log(`${i + 1}. ${track.id} — ${track.artists[0].name}`);
-    // });
-
-    return result.body.tracks.items.map((item) => ({
-      trackId: item.id,
-      artistName: item.artists[0].name,
-      songName: item.name,
+    const songs = response.data.tracks.items.map((track) => ({
+      id: track.id,
+      title: track.name,
+      artist: track.artists.map((a) => a.name).join(", "),
+      image: track.album.images[0]?.url || null,
     }));
-  } catch (err) {
-    console.error("Error:", err);
-  }
-}
 
-const getMusic = async (req, res) => {
-  try {
-    const result = await search(req.query.search);
-    return res.json({
-      data: result,
+    res.json({
+      success: true,
+      data: songs,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error Ocurred",
-    });
+    res.status(500).json({ error: error.message });
   }
 };
 
-module.exports = { getMusic };
+module.exports = {
+  getAccessToken,
+  searchMusic,
+};
