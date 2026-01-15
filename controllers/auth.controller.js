@@ -83,11 +83,7 @@ const googleSignInCallback = async (req, res) => {
 
     setAuthCookie(res, token, 7 * 24 * 60 * 60 * 1000);
 
-    return res.json({
-      success: true,
-      message: "Login Google berhasil",
-      user: sanitizeUser(user),
-    });
+    return res.redirect(process.env.CLIENT_URL);
   } catch (error) {
     console.error("[GOOGLE_CALLBACK]", error);
     return res.status(500).json({

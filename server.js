@@ -60,4 +60,6 @@ app.use("/api", messageRouter);
 app.use("/api", articleRouter);
 app.use("/api", eventRouter);
 
+// app.listen(5000, () => console.log('Server is running'))
+
 export default app;
