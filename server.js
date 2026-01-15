@@ -16,7 +16,6 @@ const app = express();
 /* =================== MIDDLEWARE =================== */
 app.use(cors({
   origin: [
-    "https://connectteen.vercel.app",
     "http://localhost:3000",
     "https://connectteenedu.com",
   ],

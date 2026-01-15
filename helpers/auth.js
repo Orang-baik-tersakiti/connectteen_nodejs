@@ -7,9 +7,10 @@ const signJwt = (payload, expiresIn) => {
 const setAuthCookie = (res, token, maxAge) => {
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
     maxAge,
+    path: "/",
   });
 };
 
