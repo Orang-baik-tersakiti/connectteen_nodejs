@@ -30,7 +30,7 @@ const searchMusic = async (req, res) => {
       return res.status(400).json({ error: "Query tidak boleh kosong" });
     }
 
-     // 🔑 Pastikan token ada
+    // 🔑 Pastikan token ada
     if (!accessToken) {
       await getAccessToken();
     }
@@ -48,7 +48,7 @@ const searchMusic = async (req, res) => {
 
     const songs = response.data.tracks.items.map((track) => ({
       id: track.id,
-      title: track.name,
+      name: track.name,
       artist: track.artists.map((a) => a.name).join(", "),
       image: track.album.images[0]?.url || null,
     }));

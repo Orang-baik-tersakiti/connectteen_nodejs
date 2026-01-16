@@ -3,9 +3,17 @@ const Message = require("../models/Message");
 
 exports.sendMessage = async (req, res) => {
   try {
-    const { recipient_name, message, song_id } = req.body;
+    const { recipient_name, message, song_id, song_image, song_artist, song_name } =
+      req.body;
 
-    if (!recipient_name || !message || !song_id) {
+    if (
+      !recipient_name ||
+      !message ||
+      !song_id ||
+      !song_image ||
+      !song_artist ||
+      !song_name
+    ) {
       return res.status(400).json({
         success: false,
         message: "Semua field wajib diisi",
@@ -16,6 +24,9 @@ exports.sendMessage = async (req, res) => {
       recipient_name,
       message,
       song_id,
+      song_image,
+      song_artist,
+      song_name,
       user: req.user.id,
     });
 
@@ -60,7 +71,6 @@ exports.getMessages = async (req, res) => {
     });
   }
 };
-
 
 exports.getMessagesHistory = async (req, res) => {
   try {
@@ -113,4 +123,3 @@ exports.getOneMessage = async (req, res) => {
     });
   }
 };
-

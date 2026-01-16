@@ -14,39 +14,28 @@ const eventRouter = require("./routes/event.routes");
 const app = express();
 
 /* =================== MIDDLEWARE =================== */
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://connectteenedu.com",
-  ],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://connectteenedu.com"],
+    credentials: true,
+  })
+);
 
 app.use(cookieParser());
 app.use(express.json());
 
 /* =================== DATABASE =================== */
-let isConnected = false;
-
 const connectDB = async () => {
-  if (isConnected) return;
-
-  await mongoose.connect(process.env.MONGO_URI, {
-    serverSelectionTimeoutMS: 5000,
-  });
-
-  isConnected = true;
-  console.log("MongoDB connected");
-};
-
-app.use(async (req, res, next) => {
   try {
-    await connectDB();
-    next();
-  } catch (err) {
-    res.status(500).json({ message: "DB connection failed" });
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
+    console.log("MongoDB connected");
+  } catch (error) {
+    console.error("MongoDB connection failed:", error.message);
+    process.exit(1); // hentikan server jika DB gagal
   }
-});
+};
 
 /* =================== ROUTES =================== */
 app.get("/", (req, res) => {
@@ -59,6 +48,14 @@ app.use("/api", messageRouter);
 app.use("/api", articleRouter);
 app.use("/api", eventRouter);
 
-// app.listen(5000, () => console.log('Server is running'))
+/* =================== SERVER =================== */
+const startServer = async () => {
+  await connectDB();
+  app.listen(5000, () => {
+    console.log("Server is running on port 5000");
+  });
+};
 
-export default app;
+startServer();
+
+module.exports = app;

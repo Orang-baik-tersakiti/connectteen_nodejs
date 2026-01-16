@@ -14,6 +14,18 @@ const messageSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    song_image: {
+      type: String,
+      required: true,
+    },
+    song_artist: {
+      type: String,
+      required: true,
+    },
+    song_name: {
+      type: String,
+      required: true,
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
