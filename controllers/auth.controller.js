@@ -263,7 +263,7 @@ const logout = async (req, res) => {
     sameSite: "none",
     path: "/",
   });
-  
+
   res.json({ success: true, message: "Logout berhasil" });
 };
 

@@ -25,21 +25,43 @@ app.use(cookieParser());
 app.use(express.json());
 
 /* =================== DATABASE =================== */
+let isConnected = false;
+
 const connectDB = async () => {
+  if (isConnected) {
+    return;
+  }
+
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000,
+    const db = await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 10000,
+      maxPoolSize: 10,
     });
-    console.log("MongoDB connected");
+    
+    isConnected = db.connections[0].readyState;
+    console.log("MongoDB connected successfully");
   } catch (error) {
     console.error("MongoDB connection failed:", error.message);
-    process.exit(1); // hentikan server jika DB gagal
+    throw error; 
   }
 };
 
 /* =================== ROUTES =================== */
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: "Database connection error",
+      error: error.message 
+    });
+  }
+});
+
 app.get("/", (req, res) => {
-  res.json("Hello World");
+  res.json("Hello World - ConnectTeen API is Active");
 });
 
 app.use("/api", musicRouter);
@@ -49,13 +71,11 @@ app.use("/api", articleRouter);
 app.use("/api", eventRouter);
 
 /* =================== SERVER =================== */
-const startServer = async () => {
-  await connectDB();
-  app.listen(5000, () => {
-    console.log("Server is running on port 5000");
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
   });
-};
-
-startServer();
+}
 
 module.exports = app;
