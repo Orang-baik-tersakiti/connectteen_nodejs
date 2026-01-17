@@ -257,7 +257,13 @@ const guestLogin = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    path: "/",
+  });
+  
   res.json({ success: true, message: "Logout berhasil" });
 };
 
