@@ -6,6 +6,7 @@ const {
   loginAdmin,
   getAuthenticated,
   guestLogin,
+  logout,
 } = require("../controllers/auth.controller");
 const {
   authMiddleware,
@@ -22,5 +23,6 @@ router.post("/admin/register", authMiddleware, adminOnly, registerAdminOnly);
 router.post("/admin/login", loginAdmin);
 router.post("/guest/login", guestLogin);
 router.get("/me", getAuthenticated);
+router.post("/logout", logout);
 
 module.exports = router;

@@ -60,7 +60,7 @@ const googleSignInCallback = async (req, res) => {
           role: "user",
           isGuest: false,
         },
-        { new: true }
+        { new: true },
       );
     } else {
       // 🔄 FLOW LAMA (Bukan guest)
@@ -239,7 +239,7 @@ const guestLogin = async (req, res) => {
     const token = jwt.sign(
       { id: guestUser._id, role: guestUser.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     res.cookie("token", token, {
@@ -256,6 +256,11 @@ const guestLogin = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  res.clearCookie("token");
+  res.json({ success: true, message: "Logout berhasil" });
+};
+
 module.exports = {
   googleSignIn,
   googleSignInCallback,
@@ -263,4 +268,5 @@ module.exports = {
   loginAdmin,
   getAuthenticated,
   guestLogin,
+  logout,
 };
