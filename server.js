@@ -10,6 +10,7 @@ const authRouter = require("./routes/auth.routes");
 const messageRouter = require("./routes/message.routes");
 const articleRouter = require("./routes/article.routes");
 const eventRouter = require("./routes/event.routes");
+const adminRouter = require("./routes/admin.routes");
 
 const app = express();
 
@@ -69,6 +70,7 @@ app.use("/api/auth", authRouter);
 app.use("/api", messageRouter);
 app.use("/api", articleRouter);
 app.use("/api", eventRouter);
+app.use("/api", adminRouter);
 
 /* =================== SERVER =================== */
 if (process.env.NODE_ENV !== "production") {

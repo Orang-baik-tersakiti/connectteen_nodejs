@@ -24,4 +24,14 @@ const sanitizeUser = (user) => ({
   no_hp: user.no_hp,
 });
 
-module.exports = { signJwt, setAuthCookie, sanitizeUser };
+const sanitizeUsers = (users) => users.map((user) => ({
+  id: user._id,
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  avatarUrl: user.avatarUrl,
+  anonymous_name: user.anonymous_name,
+  no_hp: user.no_hp,
+}));
+
+module.exports = { signJwt, setAuthCookie, sanitizeUser, sanitizeUsers };

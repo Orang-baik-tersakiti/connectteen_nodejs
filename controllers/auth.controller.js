@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const { google } = require("googleapis");
 const { oauth2Client, authorizationUrl } = require("../helpers/utils");
 const { generateAnonymousName } = require("../helpers/generateAnonymousName");
-const { signJwt, setAuthCookie, sanitizeUser } = require("../helpers/auth");
+const { signJwt, setAuthCookie, sanitizeUser, sanitizeUsers } = require("../helpers/auth");
 
 /* =========================
    GOOGLE AUTH
@@ -93,48 +93,6 @@ const googleSignInCallback = async (req, res) => {
   }
 };
 
-/* =========================
-   ADMIN REGISTER
-========================= */
-const registerAdminOnly = async (req, res) => {
-  try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ success: false, message: "Akses ditolak" });
-    }
-
-    const { name, email, password } = req.body;
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email dan password wajib diisi" });
-    }
-
-    if (await User.findOne({ email })) {
-      return res
-        .status(409)
-        .json({ success: false, message: "Email sudah terdaftar" });
-    }
-
-    const user = await User.create({
-      name,
-      email,
-      password: await bcrypt.hash(password, 10),
-      role: "admin",
-      anonymous_name: await generateAnonymousName(),
-    });
-
-    return res.status(201).json({
-      success: true,
-      message: "Admin berhasil dibuat",
-      user: sanitizeUser(user),
-    });
-  } catch (error) {
-    console.error("[REGISTER_ADMIN]", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Kesalahan server" });
-  }
-};
 
 /* =========================
    ADMIN LOGIN
@@ -267,10 +225,10 @@ const logout = async (req, res) => {
   res.json({ success: true, message: "Logout berhasil" });
 };
 
+
 module.exports = {
   googleSignIn,
   googleSignInCallback,
-  registerAdminOnly,
   loginAdmin,
   getAuthenticated,
   guestLogin,

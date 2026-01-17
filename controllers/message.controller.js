@@ -123,3 +123,37 @@ exports.getOneMessage = async (req, res) => {
     });
   }
 };
+
+exports.deleteMessage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({
+        success: false,
+        message: "Format ID tidak valid",
+      });
+    }
+
+    const message = await Message.findById(id);
+
+    if (!message) {
+      return res.status(404).json({
+        success: false,
+        message: "Message tidak ditemukan",
+      });
+    }
+
+    await Message.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Message berhasil dihapus",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
